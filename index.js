@@ -40,15 +40,15 @@ app.get('/api/hello', function(req, res) {
 
 function increaseCounter(done) {
   counterModel.findOneAndUpdate({}, {$inc: {counter: 1}}, function(err, data) {
-    if(err) return;
+    if(err) return res.status(500).send(err.stack);
     if (data) {
       done(data.counter);
     } else {
       let firstCounter = new counterModel();
       firstCounter.save(function(err) {
-        if(err) return;
+        if(err) return res.status(500).send(err.stack);
         counterModel.findOneAndUpdate({}, {$inc: {counter: 1}}, function(err, data) {
-          if(err) return;
+          if(err) return res.status(500).send(err.stack);
           done(data.counter);
         })
       })
@@ -72,7 +72,7 @@ app.post("/api/shorturl", function(req, res) {
       if(err) return res.json({ error: "invalid url" });
       else {
         urlModel.findOne({url: url}, function(err, searchedUrl) {
-          if(err) return;
+          if(err) return res.status(500).send(err.stack);
           if(searchedUrl) {
             let result = {original_url: searchedUrl.url, short_url: searchedUrl.index};
             res.json(result);
@@ -83,7 +83,7 @@ app.post("/api/shorturl", function(req, res) {
                 index: counter
               });
               newUrl.save(function(err) {
-                if(err) return;
+                if(err) return res.status(500).send(err.stack);
                 let result = {original_url: url, short_url: counter};
                 res.json(result);
               })
@@ -99,7 +99,7 @@ app.get("/api/shorturl/:urlIndex", function(req, res) {
   let urlIndex = req.params.urlIndex;
   if(!parseInt(urlIndex)) res.json({error: "Invalid Short Url"});
   urlModel.findOne({index: urlIndex}, function(err, data) {
-    if(err) return;
+    if(err) return res.status(500).send(err.stack);
     if(data) res.redirect(data.url);
     else {
       res.json({error: "No url found"});
