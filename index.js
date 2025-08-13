@@ -42,7 +42,6 @@ function increaseCounter(done) {
   counterModel.findOneAndUpdate({}, {$inc: {counter: 1}}, function(err, data) {
     if(err) return;
     if (data) {
-      console.log('increaseCounter if data', data);
       done(data.counter);
     } else {
       let firstCounter = new counterModel();
@@ -50,7 +49,6 @@ function increaseCounter(done) {
         if(err) return;
         counterModel.findOneAndUpdate({}, {$inc: {counter: 1}}, function(err, data) {
           if(err) return;
-          console.log('increaseCounter else data', data);
           done(data.counter);
         })
       })
@@ -80,7 +78,6 @@ app.post("/api/shorturl", function(req, res) {
             res.json(result);
           } else {
             increaseCounter(function(counter) {
-              console.log('counter', counter);
               let newUrl = urlModel({
                 url: url,
                 index: counter
